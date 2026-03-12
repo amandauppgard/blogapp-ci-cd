@@ -1,0 +1,88 @@
+name: Deployment pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
+jobs:
+  simple_deployment_pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Lint and create production build
+        run: |
+          cd frontend
+          npm install
+          npm run lint
+          npm run build
+          cp -r dist ../backend
+
+      - name: Set up backend
+        run: |
+          cd backend
+          npm install
+
+      - name: Run backend tests
+        run: |
+          cd backend
+          npm run test
+
+      - name: Run frontend tests
+        run: |
+          cd frontend
+          npm run test
+
+      - name: Run E2E tests
+        run: |
+          cd e2e-tests
+          npm install
+          npx playwright install
+
+          cd ../backend
+          npm run start:test
+
+          cd ../e2e-tests
+
+      - name: Job succeeded
+        if: ${{ success() }}
+        uses: rjstone/discord-webhook-notify@v2.2.1
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          username: Frog Frogson
+          avatarUrl: https://i.pinimg.com/236x/4c/28/3d/4c283d1d283f41b7ef5f538864e3ee89.jpg
+          severity: info
+          text: New version of pokedex deployed
+          title: Everything is in order!
+          description: :)
+
+      - name: Job failed
+        if: ${{ failure() }}
+        uses: rjstone/discord-webhook-notify@v2.2.1
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          username: Frog Frogson
+          avatarUrl: https://i.pinimg.com/236x/4c/28/3d/4c283d1d283f41b7ef5f538864e3ee89.jpg
+          severity: error
+          text: Uhoh not good
+          title: Build failed
+          description: Commit ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }} by ${{ github.triggering_actor }} broke the build
+
+  tag_release:
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bump version and push tag
+        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+        uses: anothrNick/github-tag-action@1.75.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
