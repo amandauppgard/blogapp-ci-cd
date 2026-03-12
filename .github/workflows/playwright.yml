@@ -1,0 +1,40 @@
+name: E2E tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  e2e_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+          cp -r dist ../backend
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm install
+
+      - name: Run E2E tests
+        env:
+          SECRET: ${{ secrets.SECRET }}
+          TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
+        run: |
+          cd e2e-tests
+          npm install
+          npx playwright install --with-deps
+          npx playwright test

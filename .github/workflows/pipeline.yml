@@ -43,16 +43,6 @@ jobs:
           cd frontend
           npm run test
 
-      - name: Run E2E tests
-        env:
-          SECRET: ${{ secrets.SECRET }}
-          TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
-        run: |
-          cd e2e-tests
-          npm install
-          npx playwright install --with-deps
-          npx playwright test
-
       - name: Job succeeded
         if: ${{ success() }}
         uses: rjstone/discord-webhook-notify@v2.2.1
