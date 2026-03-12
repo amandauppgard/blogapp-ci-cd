@@ -36,4 +36,4 @@ jobs:
         run: |
           cd e2e-tests
           npm install
-          npm run test
+          npx playwright install chromium
