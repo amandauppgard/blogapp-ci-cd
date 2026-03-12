@@ -36,5 +36,4 @@ jobs:
         run: |
           cd e2e-tests
           npm install
-          npx playwright install --with-deps
-          npx playwright test
+          npm run test
