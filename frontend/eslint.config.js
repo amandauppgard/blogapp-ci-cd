@@ -27,7 +27,6 @@ export default [
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true }
-
       ],
       indent: ['error', 2],
       'linebreak-style': ['error', 'unix'],
@@ -38,6 +37,16 @@ export default [
       'object-curly-spacing': ['error', 'always'],
       'arrow-spacing': ['error', { before: true, after: true }],
       'no-console': 'off'
+    }
+  },
+  {
+    files: ['**/*.test.{js,jsx}', '**/*.spec.{js,jsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.vitest
+      }
     }
   }
 ]

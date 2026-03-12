@@ -5,7 +5,7 @@ import { test } from 'vitest'
 
 test('renders blog title and author, but not likes and url', () => {
   const blog = {
-    title: "A good title",
+    title: 'A good title',
     author: 'Respected Author',
     url:'http://localhost:3001',
     likes: 12
@@ -24,13 +24,11 @@ test('renders blog title and author, but not likes and url', () => {
 
 test('likes and url are rendered after button click', async () => {
   const blog = {
-    title: "A good title",
+    title: 'A good title',
     author: 'Respected Author',
     url:'http://localhost:3001',
     likes: 12
   }
-
-  const mockHandler = vi.fn()
 
   render(<Blog blog={blog} />)
 
@@ -46,7 +44,7 @@ test('likes and url are rendered after button click', async () => {
 
 test('when clicking the like button twice the event handler is called twice', async () => {
   const blog = {
-    title: "A good title",
+    title: 'A good title',
     author: 'Respected Author',
     url:'http://localhost:3001',
     likes: 12
