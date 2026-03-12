@@ -31,6 +31,8 @@ jobs:
           npm install
 
       - name: Run backend tests
+        env:
+          TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
         run: |
           cd backend
           npm run test
