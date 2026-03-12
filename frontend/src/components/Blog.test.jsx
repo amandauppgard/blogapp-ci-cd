@@ -13,8 +13,10 @@ test('renders blog title and author, but not likes and url', () => {
 
   render(<Blog blog={blog} />)
 
-  const element = screen.getByText('A good title Respected Author')
-  expect(element).toBeDefined()
+  const titleElement = screen.getByText('A good title')
+  const authorElement = screen.getByText('Respected Author')
+  expect(titleElement).toBeDefined()
+  expect(authorElement).toBeDefined()
 
   const urlElement = screen.queryByText('url: http://localhost:3001')
   const likesElement = screen.queryByText('likes: 12')
